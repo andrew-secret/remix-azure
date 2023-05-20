@@ -31,7 +31,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: |
+            build/
+            public/build/
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,4 +55,3 @@ jobs:
           app-name: 'remix-on-azure'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FD96B22FF4EB497E885CCFB2F0B0BB21 }}
-          package: .
