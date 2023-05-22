@@ -7,7 +7,12 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+      - pull_request
+
+env:
+  AZURE_WEBAPP_NAME: remix-on-azure
+  AZURE_WEBAPP_PACKAGE_PATH: build/index.js
+  NODE_VERSION: '18.x'
 
 jobs:
   build:
@@ -16,10 +21,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Node.js version
+      - name: Set up Node.js version ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v1
         with:
-          node-version: '18.x'
+          node-version:  ${{ env.NODE_VERSION }}
 
       - name: npm install, build, and test
         run: |
@@ -33,7 +38,7 @@ jobs:
           name: node-app
           path: |
             build/
-            public/build/
+            public/
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,6 +57,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'remix-on-azure'
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FD96B22FF4EB497E885CCFB2F0B0BB21 }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
